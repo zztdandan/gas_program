@@ -1,0 +1,19 @@
+[
+  { "name": "BF", "cname": "炼铁" },
+
+  { "name": "PW", "cname": "动力" },
+  { "name": "PM", "cname": "混合配煤" },
+  { "name": "BH", "cname": "混匀" },
+  { "name": "RM", "cname": "混匀配料" },
+  { "name": "LJ", "cname": "焦化" },
+  { "name": "KY", "cname": "矿业" },
+  { "name": "LD", "cname": "炼钢" },
+  { "name": "CH", "cname": "炼焦配煤" },
+  { "name": "PC", "cname": "喷吹系统" },
+  { "name": "GS", "cname": "气体" },
+  { "name": "QS", "cname": "强石" },
+  { "name": "QT", "cname": "球团" },
+  { "name": "DL", "cname": "烧结" },
+  { "name": "BS", "cname": "石灰" },
+  { "name": "ZT", "cname": "铸铁" }
+]
