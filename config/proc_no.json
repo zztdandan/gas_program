@@ -1,0 +1,18 @@
+[
+  { "name": "BF", "cname": "炼铁", "active": true, "real_time_table": "GAS_REAL_TIME_BF" },
+  { "name": "PW", "cname": "动力", "active": false, "real_time_table": "GAS_REAL_TIME_PW" },
+  { "name": "PM", "cname": "混合配煤", "active": false, "real_time_table": "GAS_REAL_TIME_PM" },
+  { "name": "BH", "cname": "混匀", "active": false, "real_time_table": "GAS_REAL_TIME_BH" },
+  { "name": "RM", "cname": "混匀配料", "active": false, "real_time_table": "GAS_REAL_TIME_RM" },
+  { "name": "LJ", "cname": "焦化", "active": false, "real_time_table": "GAS_REAL_TIME_LJ" },
+  { "name": "KY", "cname": "矿业", "active": false, "real_time_table": "GAS_REAL_TIME_KY" },
+  { "name": "LD", "cname": "炼钢", "active": false, "real_time_table": "GAS_REAL_TIME_LD" },
+  { "name": "CH", "cname": "炼焦配煤", "active": false, "real_time_table": "GAS_REAL_TIME_CH" },
+  { "name": "PC", "cname": "喷吹系统", "active": false, "real_time_table": "GAS_REAL_TIME_PC" },
+  { "name": "GS", "cname": "气体", "active": false, "real_time_table": "GAS_REAL_TIME_GS" },
+  { "name": "QS", "cname": "强石", "active": false, "real_time_table": "GAS_REAL_TIME_QS" },
+  { "name": "QT", "cname": "球团", "active": false, "real_time_table": "GAS_REAL_TIME_QT" },
+  { "name": "DL", "cname": "烧结", "active": false, "real_time_table": "GAS_REAL_TIME_DL" },
+  { "name": "BS", "cname": "石灰", "active": false, "real_time_table": "GAS_REAL_TIME_BS" },
+  { "name": "ZT", "cname": "铸铁", "active": false, "real_time_table": "GAS_REAL_TIME_ZT" }
+]

@@ -30,15 +30,14 @@ async function query_function(qry) {
     }
   };
   try {
-	var conn = await doconnect;
+    var conn = await doconnect;
     var result = await doqry(conn, qry);
   } catch (err) {
     return err;
-  } finally {
-    if (conn) {
-      await conn.close();
-    }
-    return result;
   }
+  if (conn) {
+    await conn.close();
+  }
+  return result;
 }
 module.exports = query_function;
