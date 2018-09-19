@@ -4,11 +4,13 @@ module.exports = {
   //mqtt订阅话题
   Mqtt_Topic:"/lt/gas",
   //轮询进程轮询时间
-  Polling_Time: 30000,
+  Polling_Time: 20000,
   //警告数值存储间隔
   Warning_Time_Save_Step:30000,
   //总表名
   MAIN_TABLE:"GAS_REAL_TIME",
+  //STATUS_NAME为正常时的字段，默认为normal
+  NORMAL_STATUS_NAME:"normal"
   // //全二级单位代号
   // //为了不进入回调函数，所有代号直接存在文件里面
   // PROC_NO_LIST: proc_no_list

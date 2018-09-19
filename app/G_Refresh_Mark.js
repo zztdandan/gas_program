@@ -1,4 +1,4 @@
-var oraquery = require('../oracledb/query');
+const oraquery = require('../oracledb/query');
 var config = require('../config');
 var G_Refresh_Mark = async function() {
   let G_Mark = new Array();

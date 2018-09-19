@@ -25,7 +25,7 @@ async function query_function(qry) {
     } catch (err) {
       return err;
     } finally {
-      console.log(res.rows);
+      // console.log(res.rows);
       return res.rows;
     }
   };
