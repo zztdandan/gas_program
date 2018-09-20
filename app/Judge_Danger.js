@@ -4,7 +4,8 @@ const moment = require('moment');
 const linqjs = require('linqjs');
 var query = require(path.join(process.cwd(), 'oracledb', 'query'));
 const config = require(path.join(process.cwd(), 'config', 'index'));
-const insertwarning_data = require(path.join(process.cwd(), 'oracledb', 'insertwarning_data'));
+const insertWarningData = require(path.join(process.cwd(), 'oracledb', 'insertwarning_data'));
+const insertHistory = require(path.join(process.cwd(), 'oracledb', 'insertHistory'));
 JudgeDanger = function() {};
 //判断危险流程
 //对于警告数值的保存，现在拟定为20秒保存一次。任何超过normal的值都要保存起来
@@ -21,7 +22,7 @@ JudgeDanger.doJudge = function(DataArr, Law) {
   });
 };
 
-//new_status结构
+//new_status/StatusResult结构
 // ret.STATUS_ID = randomWord(false, 16);
 // ret.PROP_ID =gas_data.prop;
 // ret.STATUS_NAME = Law.LAW_STATUS_NAME;
@@ -31,7 +32,7 @@ JudgeDanger.doJudge = function(DataArr, Law) {
 // ret.VALUE = gas_data.value;
 // ret.PROC_NO= gas_data.proc_no;
 //?用于将该数据录入几个不同的表格中，进行统一判断
-JudgeDanger.doSave = async function(StatusResult) {
+JudgeDanger.doSave = async function(new_status) {
   try {
     //* 1、查找status_realtime表，是否有这个proc_id+prop_id节点的数据。
     //* IF：如果没有，说明这个节点第一次接收数据,新建一个status记录
@@ -39,8 +40,12 @@ JudgeDanger.doSave = async function(StatusResult) {
     let findStatus = await query("select * from GAS_STATUS_REAL where PROC_NO='" + StatusResult.PROC_NO + "' and PROP_ID='" + StatusResult.PROP_ID + "'");
     if (findStatus.length == 0) {
       //没有这个类型的记录
+      //添加一个新的这类型记录
+      let l = JudgeDanger.InsertToStatusReal(new_status);
     } else {
       //有这个类型的记录
+      let old_status = findStatus[0];
+      let k = await JudgeDanger.JudgeRealAndChangeSave(new_status, old_status);
     }
   } catch (e) {}
 };
@@ -63,13 +68,18 @@ JudgeDanger.DoDisconnect = async function(PROC_NO, PROC_Law) {
 JudgeDanger.JudgeRealAndChangeSave = async function(new_status, data_status) {
   //状态无变化
   if (new_status.STATUS_NAME == data_status.STATUS_NAME) {
-    let a = await JudgeDanger.SaveToWarningData(data_status);
+    //1、新状态直接存入报警历史数据库
+    //* 判断是否通常的逻辑已在函数内部写好
+    let a = await JudgeDanger.SaveToWarningData(new_status);
   } else {
     // 状态有变化
     //1、新状态直接存入报警历史数据库
     let b = await JudgeDanger.SaveToWarningData(new_status);
-    //2、旧状态中结束时间=新状态的开始时间
+    //2、旧状态中结束时间=新状态的开始时间,然后存入STATUS_HISTORY
     data_status.STATUS_END_TIME = new_status.STATUS_START_TIME;
+    let c = JudgeDanger.SaveToStatusHistory(data_status);
+    //3、将新数据存入现状态表
+    let d = JudgeDanger.UpdateToStatusReal(new_status);
   }
 };
 
@@ -80,7 +90,7 @@ JudgeDanger.SaveToWarningData = async function(data_status) {
   //只写不是normal的操作
   if (data_status.STATUS_NAME != 'normal') {
     let tmp_arr = [{ STATUS_ID: data_status.STATUS_ID, REAL_TIME: data_status.REAL_TIME, REAL_TIME_VALUE: data_status.REAL_TIME_VALUE, STATUS_NAME: data_status.STATUS_NAME }];
-    let a = await insertwarning_data(tmp_arr);
+    let a = await insertWarningData(tmp_arr);
     return true;
   }
   return true;
@@ -91,10 +101,41 @@ JudgeDanger.SaveToWarningData = async function(data_status) {
 JudgeDanger.SaveToStatusHistory = async function(data_status) {
   //此处应该读取config，现在做简化处理
   if (data_status.STATUS_NAME != 'normal') {
-    let tmp_arr = [{ STATUS_ID: data_status.STATUS_ID, PROP_ID: data_status.PROP_ID, STATUS_NAME: data_status.STATUS_NAME, STATUS_CNAME: data_status.STATUS_CNAME,STATUS_START_TIME: data_status.STATUS_START_TIME,STATUS_END_TIME: data_status.STATUS_END_TIME }];
-    let a = await insertwarning_data(tmp_arr);
+    let tmp_arr = [
+      {
+        STATUS_ID: data_status.STATUS_ID,
+        PROP_ID: data_status.PROP_ID,
+        STATUS_NAME: data_status.STATUS_NAME,
+        STATUS_CNAME: data_status.STATUS_CNAME,
+        STATUS_START_TIME: data_status.STATUS_START_TIME,
+        STATUS_END_TIME: data_status.STATUS_END_TIME
+      }
+    ];
+    let a = await insertHistory(tmp_arr);
     return true;
   }
   return true;
 };
+//? 现有的状态储存到现有表
+JudgeDanger.UpdateToStatusReal = async function(data_status) {
+  //此处应该读取config，现在做简化处理
+
+  let tmp_arr = [
+    {
+      STATUS_ID: data_status.STATUS_ID,
+      PROP_ID: data_status.PROP_ID,
+      STATUS_NAME: data_status.STATUS_NAME,
+      STATUS_CNAME: data_status.STATUS_CNAME,
+      STATUS_START_TIME: data_status.STATUS_START_TIME,
+      STATUS_END_TIME: data_status.STATUS_END_TIME
+    }
+  ];
+  let a = await insertHistory(tmp_arr);
+  return true;
+
+  return true;
+};
+//? insert现有的数据进入STATUS_REAL表
+JudgeDanger.InsertToStatusReal = async function(data_status) {};
+
 module.exports = JudgeDanger;
